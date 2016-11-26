@@ -7,7 +7,5 @@ public:
 	 bool isExist(const std::string &filePath) const ;
 	 bool createFile(const std::string &filePath) const ;
 	 bool removeFile(const std::string &filePath) const ;
-private:
-	std::string getAppDataFolderPath();
 };
 

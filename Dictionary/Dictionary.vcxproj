@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DictionaryItem.cpp" />
+    <ClCompile Include="DirectoryOperator.cpp" />
     <ClCompile Include="FileOperator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Reader.cpp" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DictionaryItem.h" />
+    <ClInclude Include="DirectoryOperator.h" />
     <ClInclude Include="FileOperator.h" />
     <ClInclude Include="Reader.h" />
     <ClInclude Include="StopWatch.h" />
