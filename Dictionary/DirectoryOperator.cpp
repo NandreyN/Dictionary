@@ -2,13 +2,15 @@
 #include <shlwapi.h>
 #pragma comment(lib,"shlwapi.lib")
 #include "shlobj.h"
-#include <Windows.h>
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
+#include <direct.h>
+#include <windows.h>
 
-bool DirectoryOperator::isExist(const std::string& filePath) const
+bool DirectoryOperator::isExist(const std::string& folderPath) const
 {
-	DWORD ftyp = GetFileAttributesA(filePath.c_str());
+	DWORD ftyp = GetFileAttributesA(folderPath.c_str());
 	if (ftyp == INVALID_FILE_ATTRIBUTES)
 	{
 		std::cerr << "Wrong path" << std::endl;
@@ -20,12 +22,12 @@ bool DirectoryOperator::isExist(const std::string& filePath) const
 	return false;
 }
 
-bool DirectoryOperator::createFileInDir(const std::string& filePath, const std::string& fileNameWithoutExtension) const
+bool DirectoryOperator::createFileInDir(const std::string& folderPath, const std::string& fileNameWithoutExtension) const
 {
-	if (!DirectoryOperator::isExist(filePath))
+	if (!DirectoryOperator::isExist(folderPath))
 		return false;
 
-	std::string fullPath = filePath + fileNameWithoutExtension + ".txt";
+	std::string fullPath = folderPath + "\\" +  fileNameWithoutExtension + ".txt";
 
 	if (this->_fOperator.createFile(fullPath))
 		return true;
@@ -33,16 +35,24 @@ bool DirectoryOperator::createFileInDir(const std::string& filePath, const std::
 	return false;
 }
 
-bool DirectoryOperator::removeFileInDir(const std::string& filePath, const std::string& fileNameWithoutExtension) const
+bool DirectoryOperator::removeFileInDir(const std::string&folderPath, const std::string& fileNameWithoutExtension) const
 {
-	if (!DirectoryOperator::isExist(filePath))
+	if (!DirectoryOperator::isExist(folderPath))
 		return false;
 
-	std::string fullPath = filePath + fileNameWithoutExtension + ".txt";
+	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension + ".txt";
 
 	if (this->_fOperator.removeFile(fullPath))
 		return true;
 
+	return false;
+}
+
+bool DirectoryOperator::createFolder( std::string& pathToFolder,  std::string& folderName)
+{
+	std::string full = pathToFolder + "\\" + folderName;
+	if (mkdir(full.c_str()))
+		return true;
 	return false;
 }
 

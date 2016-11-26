@@ -5,9 +5,11 @@
 class DirectoryOperator
 {
 public:
-	bool isExist(const std::string &filePath) const;
-	bool createFileInDir(const std::string &filePath, const std::string& fileNameWithoutExtension) const;
-	bool removeFileInDir(const std::string &filePath, const std::string& fileNameWithoutExtension) const;
+	bool isExist(const std::string &folderPath) const;
+	bool createFileInDir(const std::string &folderPath, const std::string& fileNameWithoutExtension) const;
+	bool removeFileInDir(const std::string &folderPath, const std::string& fileNameWithoutExtension) const;
+	bool createFolder( std::string &pathToFolder, std::string &fodlerName);
+
 	static std::string getAppDataFolderPath();
 private:
 	FileOperator _fOperator;
