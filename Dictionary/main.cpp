@@ -3,7 +3,7 @@
 #include "DirectoryOperator.h"
 #include "DictionaryItem.h"
 #include "StopWatch.h"
-#define FOLDER_DATA "Dictionary"
+#include "Shell.h"
 
 using namespace std;
 
@@ -12,5 +12,6 @@ int main()
 	DirectoryOperator dO;
 	FileOperator fO;
 	string o = DirectoryOperator::getAppDataFolderPath();
-
+	Shell shell;
+	shell.Listen();
 }

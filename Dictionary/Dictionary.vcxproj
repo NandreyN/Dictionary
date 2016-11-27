@@ -147,6 +147,7 @@
     <ClCompile Include="FileOperator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Shell.cpp" />
     <ClCompile Include="StopWatch.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="DirectoryOperator.h" />
     <ClInclude Include="FileOperator.h" />
     <ClInclude Include="Reader.h" />
+    <ClInclude Include="Shell.h" />
     <ClInclude Include="StopWatch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

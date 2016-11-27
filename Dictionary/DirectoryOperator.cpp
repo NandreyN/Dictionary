@@ -8,6 +8,8 @@
 #include <direct.h>
 #include <windows.h>
 
+#define FOLDER_DATA "Dictionary"
+
 bool DirectoryOperator::isExist(const std::string& folderPath) const
 {
 	DWORD ftyp = GetFileAttributesA(folderPath.c_str());
@@ -70,4 +72,9 @@ std::string DirectoryOperator::getAppDataFolderPath()
 		return s;
 	}
 	return std::string("");
+}
+
+std::string DirectoryOperator::getWorkspaceDirName()
+{
+	return DirectoryOperator::getAppDataFolderPath() + "\\" + FOLDER_DATA + "\\";
 }
