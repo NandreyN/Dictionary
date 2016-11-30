@@ -149,6 +149,7 @@
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Shell.cpp" />
     <ClCompile Include="StopWatch.cpp" />
+    <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DictionaryItem.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Reader.h" />
     <ClInclude Include="Shell.h" />
     <ClInclude Include="StopWatch.h" />
+    <ClInclude Include="Writer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,21 +5,21 @@
 #include <fstream>
 #include "DirectoryOperator.h"
 
-bool FileOperator::isExist(const std::string &filePath) const
+bool FileOperator::isExist(const std::string& filePath) const
 {
 	if (std::ifstream(filePath))
 		return true;
 	return false;
 }
 
-bool FileOperator::createFile(const std::string &filePath) const
+bool FileOperator::createFile(const std::string& filePath) const
 {
 	if (std::ofstream(filePath))
 		return true;
 	return false;
 }
 
-bool FileOperator::removeFile(const std::string &filePath) const 
+bool FileOperator::removeFile(const std::string& filePath) const
 {
 	if (this->isExist(filePath))
 	{

@@ -29,7 +29,7 @@ bool DirectoryOperator::createFileInDir(const std::string& folderPath, const std
 	if (!DirectoryOperator::isExist(folderPath))
 		return false;
 
-	std::string fullPath = folderPath + "\\" +  fileNameWithoutExtension + ".txt";
+	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension + ".txt";
 
 	if (this->_fOperator.createFile(fullPath))
 		return true;
@@ -37,7 +37,7 @@ bool DirectoryOperator::createFileInDir(const std::string& folderPath, const std
 	return false;
 }
 
-bool DirectoryOperator::removeFileInDir(const std::string&folderPath, const std::string& fileNameWithoutExtension) const
+bool DirectoryOperator::removeFileInDir(const std::string& folderPath, const std::string& fileNameWithoutExtension) const
 {
 	if (!DirectoryOperator::isExist(folderPath))
 		return false;
@@ -50,7 +50,7 @@ bool DirectoryOperator::removeFileInDir(const std::string&folderPath, const std:
 	return false;
 }
 
-bool DirectoryOperator::createFolder( std::string& pathToFolder,  std::string& folderName)
+bool DirectoryOperator::createFolder(std::string& pathToFolder, std::string& folderName)
 {
 	std::string full = pathToFolder + "\\" + folderName;
 	if (mkdir(full.c_str()))
@@ -65,7 +65,7 @@ std::string DirectoryOperator::getAppDataFolderPath()
 	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
 	{
 		size_t size = 150;
-		char * pMBBuffer = new char[size];
+		char* pMBBuffer = new char[size];
 		int count = wcstombs(pMBBuffer, szPath, size);
 		std::string s = pMBBuffer;
 		delete[] pMBBuffer;

@@ -13,4 +13,3 @@ private:
 	std::chrono::milliseconds _one, _two;
 	bool _isFirstFixed, _isSecondFixed;
 };
-

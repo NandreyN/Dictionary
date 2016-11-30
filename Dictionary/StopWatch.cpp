@@ -4,7 +4,6 @@ using namespace chrono;
 
 StopWatch::StopWatch() : _isFirstFixed(false), _isSecondFixed(false)
 {
-
 }
 
 void StopWatch::fixFirst()

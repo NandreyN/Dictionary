@@ -1,5 +1,6 @@
 #include "DictionaryItem.h"
 #include <algorithm>
+
 DictionaryItem::DictionaryItem(const std::string& key, const std::vector<std::string>& collection)
 {
 	this->_keyWord = key;
@@ -12,7 +13,7 @@ bool DictionaryItem::removeTranslation(const std::string transl)
 	{
 		this->_translationCollection.erase(std::remove(this->_translationCollection.begin(), this->_translationCollection.end(), transl), this->_translationCollection.end());
 	}
-	catch(...)
+	catch (...)
 	{
 		return false;
 	}
@@ -25,7 +26,7 @@ bool DictionaryItem::addTranslation(const std::string transl)
 	{
 		this->_translationCollection.push_back(transl);
 	}
-	catch(...)
+	catch (...)
 	{
 		return false;
 	}

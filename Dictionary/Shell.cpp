@@ -10,6 +10,9 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //HANDLERS
+// As for params:
+// 1st parameter - key word
+// 2nd - translation
 
 struct AdHandler : public Handler
 {
@@ -18,7 +21,10 @@ struct AdHandler : public Handler
 		cout << "AdHandler" << endl;
 		return false;
 	}
-	~AdHandler() {}
+
+	~AdHandler()
+	{
+	}
 };
 
 struct RmHandler : public Handler
@@ -28,7 +34,10 @@ struct RmHandler : public Handler
 		cout << "RmHandler" << endl;
 		return false;
 	}
-	~RmHandler() {}
+
+	~RmHandler()
+	{
+	}
 };
 
 struct SvHandler : public Handler
@@ -38,7 +47,10 @@ struct SvHandler : public Handler
 		cout << "SvHandler" << endl;
 		return false;
 	}
-	~SvHandler() {}
+
+	~SvHandler()
+	{
+	}
 };
 
 struct ExHandler : public Handler
@@ -48,16 +60,34 @@ struct ExHandler : public Handler
 		cout << "ExHandler" << endl;
 		return false;
 	}
-	~ExHandler() {}
+
+	~ExHandler()
+	{
+	}
 };
+
+struct GtHandler : public Handler
+{
+	bool execute(vector<string> params) override
+	{
+		cout << "GtHandler" << endl;
+		return false;
+	}
+
+	~GtHandler()
+	{
+	}
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Shell::Shell()
 {
-	this->_handlers["ad"] = new AdHandler;
-	this->_handlers["rm"] = new RmHandler;
-	this->_handlers["sv"] = new SvHandler;
-	this->_handlers["ex"] = new ExHandler;
+	this->_handlers[AD] = new AdHandler;
+	this->_handlers[RM] = new RmHandler;
+	this->_handlers[SV] = new SvHandler;
+	this->_handlers[EX] = new ExHandler;
+	this->_handlers[GT] = new GtHandler;
 }
 
 Shell::~Shell()
@@ -79,21 +109,24 @@ void Shell::Listen()
 	// there need to close files
 }
 
-static inline std::string ltrim(std::string &s) {
+static inline std::string ltrim(std::string& s)
+{
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))));
+	                                std::not1(std::ptr_fun<int, int>(std::isspace))));
 	return s;
 }
 
 // trim from end
-static inline std::string rtrim(std::string &s) {
+static inline std::string rtrim(std::string& s)
+{
 	s.erase(std::find_if(s.rbegin(), s.rend(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+	                     std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
 	return s;
 }
 
 // trim from both ends
-static inline std::string trim(std::string &s) {
+static inline std::string trim(std::string& s)
+{
 	return ltrim(rtrim(s));
 }
 
