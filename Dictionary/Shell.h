@@ -1,15 +1,17 @@
 #pragma once
 #include <string>
 #include <map>
+#include <vector>
 
 #define ADD "ad"
 #define RM "rm"
 #define SV "sv"
 #define EX	"ex"
 
+
 struct Handler
 {
-	virtual bool execute() = 0;
+	virtual bool execute(std::vector<std::string> params) = 0;
 	virtual ~Handler() {}
 };
 

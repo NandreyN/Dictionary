@@ -4,6 +4,7 @@
 #include <functional> 
 #include <cctype>
 #include <locale>
+#include <vector>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ using namespace std;
 
 struct AdHandler : public Handler
 {
-	bool execute() override
+	bool execute(vector<string> params) override
 	{
 		cout << "AdHandler" << endl;
 		return false;
@@ -22,7 +23,7 @@ struct AdHandler : public Handler
 
 struct RmHandler : public Handler
 {
-	bool execute() override
+	bool execute(vector<string> params) override
 	{
 		cout << "RmHandler" << endl;
 		return false;
@@ -32,7 +33,7 @@ struct RmHandler : public Handler
 
 struct SvHandler : public Handler
 {
-	bool execute() override
+	bool execute(vector<string> params) override
 	{
 		cout << "SvHandler" << endl;
 		return false;
@@ -42,7 +43,7 @@ struct SvHandler : public Handler
 
 struct ExHandler : public Handler
 {
-	bool execute() override
+	bool execute(vector<string> params) override
 	{
 		cout << "ExHandler" << endl;
 		return false;
@@ -99,6 +100,9 @@ static inline std::string trim(std::string &s) {
 
 std::string Shell::getCommandFromInputStr(const std::string& input) const
 {
+	if (input.length() < 2)
+		return "";
+
 	string inpCopy = input;
 	inpCopy = trim(inpCopy);
 
@@ -119,7 +123,7 @@ bool Shell::executeCommand(const std::string& command)
 	if (iterator == this->_handlers.end())
 		return false;
 
-	bool res = this->_handlers[command]->execute();
+	bool res = this->_handlers[command]->execute(vector<string>());
 	return res;
 }
 
