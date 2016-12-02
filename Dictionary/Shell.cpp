@@ -102,11 +102,38 @@ void Shell::Listen()
 	getline(cin, input);
 	while (this->getCommandFromInputStr(input) != EX)
 	{
-		string command = this->getCommandFromInputStr(input);
-		this->executeCommand(command);
+		this->executeCommand(input);
 		getline(cin, input);
 	}
 	// there need to close files
+}
+
+
+inline bool space(char c) {
+	return std::isspace(c);
+}
+
+inline bool notspace(char c) {
+	return !std::isspace(c);
+}
+
+std::vector<std::string> Shell::splitString(const std::string& line)
+{
+	vector<string> result;
+	typedef std::string::const_iterator iter;
+
+	iter i = line.begin();
+	while(i != line.end())
+	{
+		i = std::find_if(i, line.end(), notspace);
+		iter j = std::find_if(i, line.end(), space);
+		if (i != line.end())
+		{
+			result.push_back(string(i, j));
+			i = j;
+		}
+	}
+	return result;
 }
 
 static inline std::string ltrim(std::string& s)
@@ -127,11 +154,24 @@ static inline std::string rtrim(std::string& s)
 // trim from both ends
 static inline std::string trim(std::string& s)
 {
-	return ltrim(rtrim(s));
+	auto trimmedRigth = rtrim(s);
+	return ltrim(trimmedRigth);
 }
 
 
-std::string Shell::getCommandFromInputStr(const std::string& input) const
+bool Shell::parseTranslation(const std::string& input)
+{
+	string key = "", translation = "";
+	auto collection = Shell::splitString(input);
+	if (collection.size() != 2)
+		return false;
+	key = collection[0];
+	translation = collection[1];
+	this->_queueToAdd[key] = translation;
+	return true;
+}
+
+string Shell::getCommandFromInputStr(const std::string& input) const
 {
 	if (input.length() < 2)
 		return "";
@@ -140,23 +180,38 @@ std::string Shell::getCommandFromInputStr(const std::string& input) const
 	inpCopy = trim(inpCopy);
 
 	int i = 0;
-	while (inpCopy[i] == ' ')
-		i++;
+	while (input[i] == ' ')
+		++i;
 
-	inpCopy = inpCopy.substr(i, 2);
+	inpCopy = inpCopy.substr(0, 2);
 	if (input[i + 2] == ' ' || input[i + 2] == '\0')
 		return this->toLower(inpCopy);
 
 	return "";
 }
 
-bool Shell::executeCommand(const std::string& command)
+bool Shell::executeCommand(const std::string& line)
 {
+	string command = this->getCommandFromInputStr(line);
+
 	auto iterator = this->_handlers.find(command);
 	if (iterator == this->_handlers.end())
 		return false;
 
-	bool res = this->_handlers[command]->execute(vector<string>());
+	bool res = false;
+
+	if(line.length() > 2) 
+	{
+		auto commandCopy = line;
+		trim(commandCopy);
+
+		commandCopy = commandCopy.substr(2, commandCopy.length() - 2);
+
+		trim(commandCopy);
+
+		this->parseTranslation(commandCopy); // additional checks are needed
+		res = this->_handlers[command]->execute(vector<string>());
+	}
 	return res;
 }
 
