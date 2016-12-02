@@ -29,10 +29,10 @@ bool Writer::attachFileByLetter(char firstLetter)
 	return false;
 }
 
-bool Writer::writeString(std::string toWrite)
+bool Writer::writePair(std::vector<std::string> toWrite)
 {
 	if (!this->_ofstream.is_open())
 		return false;
-	this->_ofstream << toWrite << std::endl;
+	this->_ofstream << toWrite[0] << '\t' << toWrite[1] << std::endl;
 	return true;
 }
