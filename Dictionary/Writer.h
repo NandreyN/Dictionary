@@ -2,6 +2,8 @@
 #include "FileOperator.h"
 #include <fstream>
 #include <vector>
+#include <ios>
+#include <iostream>
 
 class Writer :
 	public FileOperator
@@ -12,6 +14,7 @@ public:
 	~Writer();
 	bool attachFileByLetter(char firstLetter);
 	bool writePair(std::vector < std::string > toWrite);
+	bool close();
 private:
 	std::ofstream _ofstream;
 };

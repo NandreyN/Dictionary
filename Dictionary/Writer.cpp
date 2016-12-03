@@ -26,8 +26,9 @@ bool Writer::attachFileByLetter(char firstLetter)
 		return false;
 
 	this->_ofstream.clear();
-	std::string path = DirectoryOperator::getWorkspaceDirName() + firstLetter + ".txt";
-	this->_ofstream.open(path);
+	std::string path = DirectoryOperator::getWorkspaceDirName() + firstLetter; //+ ".txt";
+	this->_ofstream.open(path, std::ios_base::app | std::ios_base::out);
+
 	if (this->_ofstream.is_open())
 		return true;
 	return false;
@@ -38,5 +39,18 @@ bool Writer::writePair(std::vector<std::string> toWrite)
 	if (!this->_ofstream.is_open())
 		return false;
 	this->_ofstream << toWrite[0] << '\t' << toWrite[1] << std::endl;
+	return true;
+}
+
+bool Writer::close()
+{
+	try
+	{
+		this->_ofstream.close();
+	}
+	catch(...)
+	{
+		return false;
+	}
 	return true;
 }

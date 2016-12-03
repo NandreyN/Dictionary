@@ -15,7 +15,7 @@ bool DirectoryOperator::isExist(const std::string& folderPath) const
 	DWORD ftyp = GetFileAttributesA(folderPath.c_str());
 	if (ftyp == INVALID_FILE_ATTRIBUTES)
 	{
-		std::cerr << "Wrong path" << std::endl;
+		std::cout << folderPath + " not found, recreating" << std::endl;
 		return false;
 	}
 	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
@@ -29,10 +29,13 @@ bool DirectoryOperator::createFileInDir(const std::string& folderPath, const std
 	if (!DirectoryOperator::isExist(folderPath))
 		return false;
 
-	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension + ".txt";
+	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension;
 
 	if (this->_fOperator.createFile(fullPath))
+	{
+		std::cout << "File " + fullPath + " created " << std::endl;
 		return true;
+	}
 
 	return false;
 }
@@ -42,7 +45,7 @@ bool DirectoryOperator::removeFileInDir(const std::string& folderPath, const std
 	if (!DirectoryOperator::isExist(folderPath))
 		return false;
 
-	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension + ".txt";
+	std::string fullPath = folderPath + "\\" + fileNameWithoutExtension;;
 
 	if (this->_fOperator.removeFile(fullPath))
 		return true;
@@ -50,11 +53,14 @@ bool DirectoryOperator::removeFileInDir(const std::string& folderPath, const std
 	return false;
 }
 
-bool DirectoryOperator::createFolder(std::string& pathToFolder, std::string& folderName)
+bool DirectoryOperator::createFolder(std::string& pathToFolder)
 {
-	std::string full = pathToFolder + "\\" + folderName;
+	std::string full = pathToFolder;
 	if (mkdir(full.c_str()))
+	{
+		std::cout <<"Fodler " +  pathToFolder + " created " << std::endl;
 		return true;
+	}
 	return false;
 }
 

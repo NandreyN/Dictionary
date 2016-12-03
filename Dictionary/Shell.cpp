@@ -5,6 +5,8 @@
 #include <cctype>
 #include <locale>
 #include <vector>
+#include "DirectoryOperator.h"
+#include <consoleapi.h>
 
 using namespace std;
 
@@ -46,8 +48,9 @@ struct SvHandler : public Handler
 {
 	bool execute(string line, Shell& obj) override
 	{
-		cout << "SvHandler" << endl;
-		return false;
+		obj.save();
+		cout << "Saving" << endl;
+		return true;
 	}
 
 	~SvHandler()
@@ -87,17 +90,38 @@ struct GtHandler : public Handler
 Shell::Shell() : _writer()
 {
 	this->_flag = true;
+	this->_saveFlag = false;
+
 	this->_handlers[AD] = new AdHandler;
 	this->_handlers[RM] = new RmHandler;
 	this->_handlers[SV] = new SvHandler;
 	this->_handlers[EX] = new ExHandler;
 	this->_handlers[GT] = new GtHandler;
+	this->checkFilesInWorkspace();
+	setlocale(LC_CTYPE, "rus");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251);
+}
+
+// trim from both ends
+static inline std::string trim(std::string& str)
+{
+	size_t first = str.find_first_not_of(' ');
+	if (string::npos == first)
+	{
+		return str;
+	}
+	size_t last = str.find_last_not_of(' ');
+	return str.substr(first, (last - first + 1));
 }
 
 Shell::~Shell()
 {
 	for (auto it = this->_handlers.begin(); it != this->_handlers.end(); ++it)
 		delete it->second;
+	if (this->_queueToAdd.size() != 0)
+		this->unloadQueue();
+	this->_writer.close();
 }
 
 void Shell::Listen()
@@ -107,6 +131,12 @@ void Shell::Listen()
 	{
 		getline(cin, input);
 		this->executeCommand(input);
+		if (this->_saveFlag)
+		{
+			this->_saveFlag = false;
+			this->unloadQueue();
+		}
+
 	} while (this->_flag);
 }
 
@@ -115,7 +145,12 @@ void Shell::Stop()
 	this->_flag = false;
 }
 
-inline bool space(char c) { 
+void Shell::save()
+{
+	this->_saveFlag = true;
+}
+
+inline bool space(char c) {
 	return std::isspace(c);
 }
 
@@ -126,18 +161,22 @@ inline bool notspace(char c) {
 std::vector<std::string> Shell::splitString(const std::string& line)
 {
 	vector<string> result;
-	typedef std::string::const_iterator iter;
 
-	iter i = line.begin();
-	while (i != line.end())
+	int i = 0, j = 0;
+	while(i < line.length())
 	{
-		i = std::find_if(i, line.end(), notspace);
-		iter j = std::find_if(i, line.end(), space);
-		if (i != line.end())
+		if (line[i] == ' ')
 		{
-			result.push_back(string(i, j));
-			i = j;
+			++i;
+			continue;
 		}
+		while(line[i] != ' ' && i < line.length())
+		{
+			i++;
+		}
+		result.push_back(trim(line.substr(j,i - j)));
+		j = i;
+		i++;
 	}
 	return result;
 }
@@ -152,32 +191,9 @@ bool Shell::pushPairInCollection(const std::vector<std::string>& pair)
 	return true;
 }
 
-static inline std::string ltrim(std::string& s)
-{
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return s;
-}
-
-// trim from end
-static inline std::string rtrim(std::string& s)
-{
-	s.erase(std::find_if(s.rbegin(), s.rend(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-	return s;
-}
-
-// trim from both ends
-static inline std::string trim(std::string& s)
-{
-	auto trimmedRigth = rtrim(s);
-	return ltrim(trimmedRigth);
-}
-
-
 bool Shell::unloadQueue()
 {
-	this->sortQueue();
+	//this->sortQueue();
 	char filePrefix = 0;
 	for (map<string, string> ::iterator iter = this->_queueToAdd.begin(); iter != this->_queueToAdd.end(); ++iter)
 	{
@@ -186,20 +202,42 @@ bool Shell::unloadQueue()
 		if (filePrefix != key[0])
 		{
 			filePrefix = key[0];
+			this->_writer.close();
 			this->_writer.attachFileByLetter(filePrefix);
 		}
-		vector<string> dataPass(2);
+		vector<string> dataPass(0);
 		dataPass.push_back(key);
 		dataPass.push_back(value);
 		this->_writer.writePair(dataPass);
 	}
 	this->_queueToAdd.clear();
+	this->_writer.close();
 	return true;
 }
 
 void Shell::sortQueue()
 {
 	//std::stable_sort(this->_queueToAdd.begin(), this->_queueToAdd.end());
+}
+
+bool Shell::checkFilesInWorkspace()
+{
+	// 65 - 90
+	string path = DirectoryOperator::getWorkspaceDirName();
+	DirectoryOperator dOperator;
+	if (!dOperator.isExist(path))
+	{
+		dOperator.createFolder(path);
+		for (char i = 'A'; i <= 'Z'; i++)
+		{
+			string fname = "22";
+			fname[0] = i;
+			fname[1] = '\0';
+			dOperator.createFileInDir(path,fname);
+		}
+	}
+
+	return true;
 }
 
 string Shell::getCommandFromInputStr(const std::string& input) const
