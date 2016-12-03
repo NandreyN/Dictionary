@@ -102,7 +102,7 @@ Shell::~Shell()
 
 void Shell::Listen()
 {
-	string input;
+	string input; 
 	do
 	{
 		getline(cin, input);
