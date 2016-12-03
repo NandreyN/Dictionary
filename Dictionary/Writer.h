@@ -8,6 +8,7 @@ class Writer :
 {
 public:
 	explicit Writer(const std::string& outPath);
+	explicit Writer();
 	~Writer();
 	bool attachFileByLetter(char firstLetter);
 	bool writePair(std::vector < std::string > toWrite);

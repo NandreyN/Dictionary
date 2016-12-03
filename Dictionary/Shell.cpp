@@ -16,10 +16,12 @@ using namespace std;
 
 struct AdHandler : public Handler
 {
-	bool execute(vector<string> params) override
+	bool execute(string line, Shell& obj) override
 	{
 		cout << "AdHandler" << endl;
-		return false;
+		// Here I need to call parseTranslation
+		auto data = obj.splitString(line);
+		return obj.pushPairInCollection(data);
 	}
 
 	~AdHandler()
@@ -29,7 +31,7 @@ struct AdHandler : public Handler
 
 struct RmHandler : public Handler
 {
-	bool execute(vector<string> params) override
+	bool execute(string line, Shell& obj) override
 	{
 		cout << "RmHandler" << endl;
 		return false;
@@ -42,7 +44,7 @@ struct RmHandler : public Handler
 
 struct SvHandler : public Handler
 {
-	bool execute(vector<string> params) override
+	bool execute(string line, Shell& obj) override
 	{
 		cout << "SvHandler" << endl;
 		return false;
@@ -55,9 +57,10 @@ struct SvHandler : public Handler
 
 struct ExHandler : public Handler
 {
-	bool execute(vector<string> params) override
+	bool execute(string line, Shell& obj) override
 	{
 		cout << "ExHandler" << endl;
+		obj.Stop();
 		return false;
 	}
 
@@ -68,7 +71,7 @@ struct ExHandler : public Handler
 
 struct GtHandler : public Handler
 {
-	bool execute(vector<string> params) override
+	bool execute(string line, Shell& obj) override
 	{
 		cout << "GtHandler" << endl;
 		return false;
@@ -81,8 +84,9 @@ struct GtHandler : public Handler
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Shell::Shell()
+Shell::Shell() : _writer()
 {
+	this->_flag = true;
 	this->_handlers[AD] = new AdHandler;
 	this->_handlers[RM] = new RmHandler;
 	this->_handlers[SV] = new SvHandler;
@@ -99,15 +103,17 @@ Shell::~Shell()
 void Shell::Listen()
 {
 	string input;
-	getline(cin, input);
-	while (this->getCommandFromInputStr(input) != EX)
+	do
 	{
-		this->executeCommand(input);
 		getline(cin, input);
-	}
-	// there need to close files
+		this->executeCommand(input);
+	} while (this->_flag);
 }
 
+void Shell::Stop()
+{
+	this->_flag = false;
+}
 
 inline bool space(char c) {
 	return std::isspace(c);
@@ -123,7 +129,7 @@ std::vector<std::string> Shell::splitString(const std::string& line)
 	typedef std::string::const_iterator iter;
 
 	iter i = line.begin();
-	while(i != line.end())
+	while (i != line.end())
 	{
 		i = std::find_if(i, line.end(), notspace);
 		iter j = std::find_if(i, line.end(), space);
@@ -136,10 +142,20 @@ std::vector<std::string> Shell::splitString(const std::string& line)
 	return result;
 }
 
+bool Shell::pushPairInCollection(const std::vector<std::string>& pair)
+{
+	if (pair.size() != 2)
+		return false;
+	if (pair[0] == "" || pair[1] == "")
+		return false;
+	this->_queueToAdd[pair[0]] = pair[1];
+	return true;
+}
+
 static inline std::string ltrim(std::string& s)
 {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-	                                std::not1(std::ptr_fun<int, int>(std::isspace))));
+		std::not1(std::ptr_fun<int, int>(std::isspace))));
 	return s;
 }
 
@@ -147,7 +163,7 @@ static inline std::string ltrim(std::string& s)
 static inline std::string rtrim(std::string& s)
 {
 	s.erase(std::find_if(s.rbegin(), s.rend(),
-	                     std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
 	return s;
 }
 
@@ -159,16 +175,31 @@ static inline std::string trim(std::string& s)
 }
 
 
-bool Shell::parseTranslation(const std::string& input)
+bool Shell::unloadQueue()
 {
-	string key = "", translation = "";
-	auto collection = Shell::splitString(input);
-	if (collection.size() != 2)
-		return false;
-	key = collection[0];
-	translation = collection[1];
-	this->_queueToAdd[key] = translation;
+	this->sortQueue();
+	char filePrefix = 0;
+	for (map<string, string> ::iterator iter = this->_queueToAdd.begin(); iter != this->_queueToAdd.end(); ++iter)
+	{
+		string key = iter->first;
+		string value = iter->second;
+		if (filePrefix != key[0])
+		{
+			filePrefix = key[0];
+			this->_writer.attachFileByLetter(filePrefix);
+		}
+		vector<string> dataPass(2);
+		dataPass.push_back(key);
+		dataPass.push_back(value);
+		this->_writer.writePair(dataPass);
+	}
+	this->_queueToAdd.clear();
 	return true;
+}
+
+void Shell::sortQueue()
+{
+	//std::stable_sort(this->_queueToAdd.begin(), this->_queueToAdd.end());
 }
 
 string Shell::getCommandFromInputStr(const std::string& input) const
@@ -200,7 +231,7 @@ bool Shell::executeCommand(const std::string& line)
 
 	bool res = false;
 
-	if(line.length() > 2) 
+	if (line.length() >= 2)
 	{
 		auto commandCopy = line;
 		trim(commandCopy);
@@ -209,8 +240,7 @@ bool Shell::executeCommand(const std::string& line)
 
 		trim(commandCopy);
 
-		this->parseTranslation(commandCopy); // additional checks are needed
-		res = this->_handlers[command]->execute(vector<string>());
+		res = this->_handlers[command]->execute(commandCopy, *this);
 	}
 	return res;
 }

@@ -8,6 +8,10 @@ Writer::Writer(const std::string& outPath) :_ofstream(outPath)
 		throw OpenError();
 }
 
+Writer::Writer() : _ofstream("")
+{
+}
+
 Writer::~Writer()
 {
 	this->_ofstream.close();
