@@ -41,6 +41,7 @@ private:
 
 	bool unloadQueue();
 	void sortQueue();
+	bool checkFilesInWorkspace();
 
 	std::string getCommandFromInputStr(const std::string& input) const;
 	bool executeCommand(const std::string& command);

@@ -9,9 +9,7 @@ using namespace std;
 
 int main()
 {
-	DirectoryOperator dO;
-	FileOperator fO;
-	string o = DirectoryOperator::getAppDataFolderPath();
 	Shell shell;
 	shell.Listen();
+	
 }

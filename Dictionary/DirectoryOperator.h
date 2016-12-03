@@ -8,7 +8,7 @@ public:
 	bool isExist(const std::string& folderPath) const;
 	bool createFileInDir(const std::string& folderPath, const std::string& fileNameWithoutExtension) const;
 	bool removeFileInDir(const std::string& folderPath, const std::string& fileNameWithoutExtension) const;
-	bool createFolder(std::string& pathToFolder, std::string& fodlerName);
+	bool createFolder(std::string& pathToFolder);
 
 	static std::string getWorkspaceDirName();
 	static std::string getAppDataFolderPath();

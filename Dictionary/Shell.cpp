@@ -5,6 +5,7 @@
 #include <cctype>
 #include <locale>
 #include <vector>
+#include "DirectoryOperator.h"
 
 using namespace std;
 
@@ -92,21 +93,28 @@ Shell::Shell() : _writer()
 	this->_handlers[SV] = new SvHandler;
 	this->_handlers[EX] = new ExHandler;
 	this->_handlers[GT] = new GtHandler;
+	this->checkFilesInWorkspace();
 }
 
 Shell::~Shell()
 {
 	for (auto it = this->_handlers.begin(); it != this->_handlers.end(); ++it)
 		delete it->second;
+	if (this->_queueToAdd.size() != 0)
+		this->unloadQueue();
+	this->_writer.close();
 }
 
 void Shell::Listen()
 {
-	string input; 
+	string input;
 	do
 	{
 		getline(cin, input);
 		this->executeCommand(input);
+		if (this->_queueToAdd.size() > 2)
+			this->unloadQueue();
+
 	} while (this->_flag);
 }
 
@@ -177,7 +185,7 @@ static inline std::string trim(std::string& s)
 
 bool Shell::unloadQueue()
 {
-	this->sortQueue();
+	//this->sortQueue();
 	char filePrefix = 0;
 	for (map<string, string> ::iterator iter = this->_queueToAdd.begin(); iter != this->_queueToAdd.end(); ++iter)
 	{
@@ -186,20 +194,42 @@ bool Shell::unloadQueue()
 		if (filePrefix != key[0])
 		{
 			filePrefix = key[0];
+			this->_writer.close();
 			this->_writer.attachFileByLetter(filePrefix);
 		}
-		vector<string> dataPass(2);
+		vector<string> dataPass(0);
 		dataPass.push_back(key);
 		dataPass.push_back(value);
 		this->_writer.writePair(dataPass);
 	}
 	this->_queueToAdd.clear();
+	this->_writer.close();
 	return true;
 }
 
 void Shell::sortQueue()
 {
 	//std::stable_sort(this->_queueToAdd.begin(), this->_queueToAdd.end());
+}
+
+bool Shell::checkFilesInWorkspace()
+{
+	// 65 - 90
+	string path = DirectoryOperator::getWorkspaceDirName();
+	DirectoryOperator dOperator;
+	if (!dOperator.isExist(path))
+	{
+		dOperator.createFolder(path);
+		for (char i = 'A'; i <= 'Z'; i++)
+		{
+			string fname = "22";
+			fname[0] = i;
+			fname[1] = '\0';
+			dOperator.createFileInDir(path,fname);
+		}
+	}
+
+	return true;
 }
 
 string Shell::getCommandFromInputStr(const std::string& input) const
