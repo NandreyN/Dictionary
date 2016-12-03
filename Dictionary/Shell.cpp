@@ -6,6 +6,7 @@
 #include <locale>
 #include <vector>
 #include "DirectoryOperator.h"
+#include <consoleapi.h>
 
 using namespace std;
 
@@ -94,6 +95,21 @@ Shell::Shell() : _writer()
 	this->_handlers[EX] = new ExHandler;
 	this->_handlers[GT] = new GtHandler;
 	this->checkFilesInWorkspace();
+	setlocale(LC_CTYPE, "rus");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251);
+}
+
+// trim from both ends
+static inline std::string trim(std::string& str)
+{
+	size_t first = str.find_first_not_of(' ');
+	if (string::npos == first)
+	{
+		return str;
+	}
+	size_t last = str.find_last_not_of(' ');
+	return str.substr(first, (last - first + 1));
 }
 
 Shell::~Shell()
@@ -134,18 +150,22 @@ inline bool notspace(char c) {
 std::vector<std::string> Shell::splitString(const std::string& line)
 {
 	vector<string> result;
-	typedef std::string::const_iterator iter;
 
-	iter i = line.begin();
-	while (i != line.end())
+	int i = 0, j = 0;
+	while(i < line.length())
 	{
-		i = std::find_if(i, line.end(), notspace);
-		iter j = std::find_if(i, line.end(), space);
-		if (i != line.end())
+		if (line[i] == ' ')
 		{
-			result.push_back(string(i, j));
-			i = j;
+			++i;
+			continue;
 		}
+		while(line[i] != ' ' && i < line.length())
+		{
+			i++;
+		}
+		result.push_back(trim(line.substr(j,i - j)));
+		j = i;
+		i++;
 	}
 	return result;
 }
@@ -159,29 +179,6 @@ bool Shell::pushPairInCollection(const std::vector<std::string>& pair)
 	this->_queueToAdd[pair[0]] = pair[1];
 	return true;
 }
-
-static inline std::string ltrim(std::string& s)
-{
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return s;
-}
-
-// trim from end
-static inline std::string rtrim(std::string& s)
-{
-	s.erase(std::find_if(s.rbegin(), s.rend(),
-		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-	return s;
-}
-
-// trim from both ends
-static inline std::string trim(std::string& s)
-{
-	auto trimmedRigth = rtrim(s);
-	return ltrim(trimmedRigth);
-}
-
 
 bool Shell::unloadQueue()
 {

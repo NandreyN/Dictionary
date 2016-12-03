@@ -4,6 +4,7 @@
 #include "DictionaryItem.h"
 #include "StopWatch.h"
 #include "Shell.h"
+#include <consoleapi.h>
 
 using namespace std;
 
