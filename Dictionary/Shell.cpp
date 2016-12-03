@@ -48,8 +48,9 @@ struct SvHandler : public Handler
 {
 	bool execute(string line, Shell& obj) override
 	{
-		cout << "SvHandler" << endl;
-		return false;
+		obj.save();
+		cout << "Saving" << endl;
+		return true;
 	}
 
 	~SvHandler()
@@ -89,6 +90,8 @@ struct GtHandler : public Handler
 Shell::Shell() : _writer()
 {
 	this->_flag = true;
+	this->_saveFlag = false;
+
 	this->_handlers[AD] = new AdHandler;
 	this->_handlers[RM] = new RmHandler;
 	this->_handlers[SV] = new SvHandler;
@@ -128,8 +131,11 @@ void Shell::Listen()
 	{
 		getline(cin, input);
 		this->executeCommand(input);
-		if (this->_queueToAdd.size() > 2)
+		if (this->_saveFlag)
+		{
+			this->_saveFlag = false;
 			this->unloadQueue();
+		}
 
 	} while (this->_flag);
 }
@@ -137,6 +143,11 @@ void Shell::Listen()
 void Shell::Stop()
 {
 	this->_flag = false;
+}
+
+void Shell::save()
+{
+	this->_saveFlag = true;
 }
 
 inline bool space(char c) {

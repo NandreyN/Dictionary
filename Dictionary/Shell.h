@@ -30,11 +30,14 @@ public:
 	~Shell();
 	void Listen();
 	void Stop();
+	void save();
 	static std::vector < std::string > splitString(const std::string& line);
 	bool pushPairInCollection(const std::vector<std::string>& pair);
 
 private:
 	bool _flag;
+	bool _saveFlag;
+
 	std::map<std::string, Handler*> _handlers;
 	std::map < std::string, std::string, std::greater < std::string >> _queueToAdd; // pair key - translation
 	Writer _writer;
