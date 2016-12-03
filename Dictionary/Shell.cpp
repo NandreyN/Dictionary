@@ -115,7 +115,7 @@ void Shell::Stop()
 	this->_flag = false;
 }
 
-inline bool space(char c) {
+inline bool space(char c) { 
 	return std::isspace(c);
 }
 
